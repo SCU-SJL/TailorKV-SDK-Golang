@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"strconv"
+	"time"
 )
 
 const (
@@ -51,6 +53,22 @@ func (t *Tailor) Set(key, val string) error {
 	return t.readRespMsg()
 }
 
+func (t *Tailor) Setex(key, val string, exp time.Duration) error {
+	err := t.sendDatagram(setex, key, val, string(exp.Milliseconds()))
+	if err != nil {
+		return err
+	}
+	return t.readRespMsg()
+}
+
+func (t *Tailor) Setnx(key, val string) error {
+	err := t.sendDatagram(setnx, key, val, "")
+	if err != nil {
+		return err
+	}
+	return t.readRespMsg()
+}
+
 func (t *Tailor) Get(key string, maxSizeOfVal int) (string, error) {
 	err := t.sendDatagram(get, key, "", "")
 	if err != nil {
@@ -68,6 +86,26 @@ func (t *Tailor) Get(key string, maxSizeOfVal int) (string, error) {
 		return "", err
 	}
 	return string(val[:n]), nil
+}
+
+func (t *Tailor) Cnt() (int, error) {
+	err := t.sendDatagram(cnt, "", "", "")
+	if err != nil {
+		return -1, err
+	}
+	if err = t.readRespMsg(); err != nil {
+		return -1, err
+	}
+	count := make([]byte, 8)
+	n, err := t.read(count)
+	if err != nil {
+		return -1, nil
+	}
+	cnt, err := strconv.Atoi(string(count[:n]))
+	if err != nil {
+		return -1, err
+	}
+	return cnt, nil
 }
 
 func (t *Tailor) sendDatagram(op byte, key, val, exp string) error {
