@@ -54,7 +54,7 @@ func (t *Tailor) Set(key, val string) error {
 }
 
 func (t *Tailor) Setex(key, val string, exp time.Duration) error {
-	err := t.sendDatagram(setex, key, val, string(exp.Milliseconds()))
+	err := t.sendDatagram(setex, key, val, strconv.FormatInt(exp.Milliseconds(), 10))
 	if err != nil {
 		return err
 	}
