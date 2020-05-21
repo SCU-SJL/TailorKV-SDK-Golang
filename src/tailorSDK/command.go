@@ -108,6 +108,14 @@ func (t *Tailor) Cnt() (int, error) {
 	return cnt, nil
 }
 
+func (t *Tailor) Del(key string) error {
+	err := t.sendDatagram(del, key, "", "")
+	if err != nil {
+		return err
+	}
+	return t.readRespMsg()
+}
+
 func (t *Tailor) sendDatagram(op byte, key, val, exp string) error {
 	data := &datagram{
 		Op:  op,
