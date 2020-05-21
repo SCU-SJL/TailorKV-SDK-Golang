@@ -116,6 +116,31 @@ func (t *Tailor) Del(key string) error {
 	return t.readRespMsg()
 }
 
+func (t *Tailor) Ttl(key string) (time.Duration, error) {
+	err := t.sendDatagram(ttl, key, "", "")
+	if err != nil {
+		return 0, err
+	}
+
+	resp := make([]byte, 1)
+	_, err = t.read(resp)
+	if err != nil {
+		return 0, err
+	}
+
+	ttl := make([]byte, 128)
+	n, err := t.read(ttl)
+	if err != nil {
+		return 0, err
+	}
+
+	if resp[0] != 0 {
+		return 0, tailorErrors[resp[0]]
+	}
+
+	return time.ParseDuration(string(ttl[:n]))
+}
+
 func (t *Tailor) sendDatagram(op byte, key, val, exp string) error {
 	data := &datagram{
 		Op:  op,
