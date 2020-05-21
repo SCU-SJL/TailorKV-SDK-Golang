@@ -56,3 +56,13 @@ func TestTailor_Setnx(t *testing.T) {
 	}
 	fmt.Println(err)
 }
+
+func TestTailor_Del(t *testing.T) {
+	if tErr != nil {
+		t.Fatal(tErr)
+	}
+	err := tailor.Del("me")
+	if err != nil {
+		t.Errorf("func Del(): %v", err)
+	}
+}
