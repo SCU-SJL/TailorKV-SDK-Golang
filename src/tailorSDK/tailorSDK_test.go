@@ -66,3 +66,27 @@ func TestTailor_Del(t *testing.T) {
 		t.Errorf("func Del(): %v", err)
 	}
 }
+
+func TestTailor_Ttl(t *testing.T) {
+	if tErr != nil {
+		t.Fatal(tErr)
+	}
+	_, err := tailor.Ttl("123")
+	if err != nil {
+		fmt.Println(err)
+	}
+	_ = tailor.Setex("10s", "10 seconds", 10*time.Second)
+	ttl, err := tailor.Ttl("10s")
+	if err != nil {
+		t.Errorf("Ttl() err: %v", err)
+	} else {
+		fmt.Println("Ttl() res: ", ttl)
+	}
+
+	ttl, err = tailor.Ttl("10s")
+	if err != nil {
+		t.Errorf("Ttl() err: %v", err)
+	} else {
+		fmt.Println("Ttl() res: ", ttl)
+	}
+}
