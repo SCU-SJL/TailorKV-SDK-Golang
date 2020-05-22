@@ -122,8 +122,7 @@ func (t *Tailor) Ttl(key string) (time.Duration, error) {
 		return 0, err
 	}
 
-	resp := make([]byte, 1)
-	_, err = t.read(resp)
+	err = t.readRespMsg()
 	if err != nil {
 		return 0, err
 	}
@@ -132,10 +131,6 @@ func (t *Tailor) Ttl(key string) (time.Duration, error) {
 	n, err := t.read(ttl)
 	if err != nil {
 		return 0, err
-	}
-
-	if resp[0] != 0 {
-		return 0, tailorErrors[resp[0]]
 	}
 
 	return time.ParseDuration(string(ttl[:n]))
