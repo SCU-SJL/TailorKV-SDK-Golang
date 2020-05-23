@@ -90,3 +90,17 @@ func TestTailor_Ttl(t *testing.T) {
 		fmt.Println("Ttl() res: ", ttl)
 	}
 }
+
+func TestTailor_Unlink(t *testing.T) {
+	if tErr != nil {
+		t.Fatal(tErr)
+	}
+	err := tailor.Set("me", "sjl")
+	if err != nil {
+		t.Error(err)
+	}
+	err = tailor.Unlink("me")
+	if err != nil {
+		t.Error(err)
+	}
+}
