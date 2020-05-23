@@ -8,6 +8,7 @@ import (
 	"errors"
 	"log"
 	"net"
+	"sync"
 )
 
 func Connect(ipAddr, port, password, AESKey string) (*Tailor, error) {
@@ -23,7 +24,10 @@ func Connect(ipAddr, port, password, AESKey string) (*Tailor, error) {
 	if authErr != nil {
 		return nil, authErr
 	}
-	return &Tailor{conn}, nil
+	return &Tailor{
+		conn: conn,
+		mu:   sync.Mutex{},
+	}, nil
 }
 
 func auth(conn net.Conn, password, AESKey string) error {

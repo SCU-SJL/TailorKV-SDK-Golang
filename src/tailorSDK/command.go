@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"strconv"
+	"sync"
 	"time"
 )
 
@@ -39,13 +40,18 @@ var tailorErrors = []error{
 
 type Tailor struct {
 	conn net.Conn
+	mu   sync.Mutex
 }
 
 func (t *Tailor) Shutdown() error {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 	return t.conn.Close()
 }
 
 func (t *Tailor) Set(key, val string) error {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 	err := t.sendDatagram(set, key, val, "")
 	if err != nil {
 		return err
@@ -54,6 +60,8 @@ func (t *Tailor) Set(key, val string) error {
 }
 
 func (t *Tailor) Setex(key, val string, exp time.Duration) error {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 	err := t.sendDatagram(setex, key, val, strconv.FormatInt(exp.Milliseconds(), 10))
 	if err != nil {
 		return err
@@ -62,6 +70,8 @@ func (t *Tailor) Setex(key, val string, exp time.Duration) error {
 }
 
 func (t *Tailor) Setnx(key, val string) error {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 	err := t.sendDatagram(setnx, key, val, "")
 	if err != nil {
 		return err
@@ -70,6 +80,8 @@ func (t *Tailor) Setnx(key, val string) error {
 }
 
 func (t *Tailor) Get(key string, maxSizeOfVal int) (string, error) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 	err := t.sendDatagram(get, key, "", "")
 	if err != nil {
 		return "", nil
@@ -89,6 +101,8 @@ func (t *Tailor) Get(key string, maxSizeOfVal int) (string, error) {
 }
 
 func (t *Tailor) Cnt() (int, error) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 	err := t.sendDatagram(cnt, "", "", "")
 	if err != nil {
 		return -1, err
@@ -109,6 +123,8 @@ func (t *Tailor) Cnt() (int, error) {
 }
 
 func (t *Tailor) Del(key string) error {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 	err := t.sendDatagram(del, key, "", "")
 	if err != nil {
 		return err
@@ -117,6 +133,8 @@ func (t *Tailor) Del(key string) error {
 }
 
 func (t *Tailor) Unlink(key string) error {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 	err := t.sendDatagram(unlink, key, "", "")
 	if err != nil {
 		return err
@@ -125,6 +143,8 @@ func (t *Tailor) Unlink(key string) error {
 }
 
 func (t *Tailor) Ttl(key string) (time.Duration, error) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 	err := t.sendDatagram(ttl, key, "", "")
 	if err != nil {
 		return 0, err
