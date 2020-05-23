@@ -116,6 +116,14 @@ func (t *Tailor) Del(key string) error {
 	return t.readRespMsg()
 }
 
+func (t *Tailor) Unlink(key string) error {
+	err := t.sendDatagram(unlink, key, "", "")
+	if err != nil {
+		return err
+	}
+	return t.readRespMsg()
+}
+
 func (t *Tailor) Ttl(key string) (time.Duration, error) {
 	err := t.sendDatagram(ttl, key, "", "")
 	if err != nil {
