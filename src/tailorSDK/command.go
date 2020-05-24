@@ -164,6 +164,27 @@ func (t *Tailor) Ttl(key string) (time.Duration, error) {
 	return time.ParseDuration(string(ttl[:n]))
 }
 
+func (t *Tailor) Incr(key string) error {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	err := t.sendDatagram(incr, key, "", "")
+	if err != nil {
+		return err
+	}
+
+	return t.readRespMsg()
+}
+
+func (t *Tailor) Incrby(key string, addition int) error {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	err := t.sendDatagram(incrby, key, strconv.Itoa(addition), "")
+	if err != nil {
+		return err
+	}
+	return t.readRespMsg()
+}
+
 func (t *Tailor) sendDatagram(op byte, key, val, exp string) error {
 	data := &datagram{
 		Op:  op,
