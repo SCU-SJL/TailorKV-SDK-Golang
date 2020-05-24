@@ -104,3 +104,21 @@ func TestTailor_Unlink(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestTailor_Incr(t *testing.T) {
+	if tErr != nil {
+		t.Fatal(tErr)
+	}
+	err := tailor.Set("num1", "1")
+	if err != nil {
+		t.Error(err)
+	}
+	err = tailor.Incr("num1")
+	if err != nil {
+		t.Error(err)
+	}
+	err = tailor.Incrby("num1", 10)
+	if err != nil {
+		t.Error(err)
+	}
+}
