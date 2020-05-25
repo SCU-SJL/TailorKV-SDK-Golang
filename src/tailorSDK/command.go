@@ -44,12 +44,6 @@ type Tailor struct {
 	mu   sync.Mutex
 }
 
-func (t *Tailor) Shutdown() error {
-	t.mu.Lock()
-	defer t.mu.Unlock()
-	return t.conn.Close()
-}
-
 func (t *Tailor) Set(key, val string) error {
 	t.mu.Lock()
 	defer t.mu.Unlock()
@@ -187,6 +181,8 @@ func (t *Tailor) Incrby(key string, addition int) error {
 }
 
 func (t *Tailor) Cls() error {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 	err := t.sendDatagram(cls, "", "", "")
 	if err != nil {
 		return err
@@ -208,6 +204,8 @@ func getKeys(data []byte) ([]string, error) {
 }
 
 func (t *Tailor) Keys(expr string, maxSize int) ([]string, error) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 	err := t.sendDatagram(keys, expr, "", "")
 	if err != nil {
 		return nil, err
@@ -223,6 +221,15 @@ func (t *Tailor) Keys(expr string, maxSize int) ([]string, error) {
 		return nil, err
 	}
 	return getKeys(buf[:n])
+}
+
+func (t *Tailor) Shutdown() error {
+	t.mu.Lock()
+	defer func() {
+		t.mu.Unlock()
+		t.conn.Close()
+	}()
+	return t.sendDatagram(exit, "", "", "")
 }
 
 func (t *Tailor) sendDatagram(op byte, key, val, exp string) error {
