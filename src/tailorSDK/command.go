@@ -1,6 +1,7 @@
 package tailorSDK
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net"
@@ -191,6 +192,37 @@ func (t *Tailor) Cls() error {
 		return err
 	}
 	return t.readRespMsg()
+}
+
+type keysDatagram struct {
+	Ks []string `json:"ks"`
+}
+
+func getKeys(data []byte) ([]string, error) {
+	var ks keysDatagram
+	err := json.Unmarshal(data, &ks)
+	if err != nil {
+		return nil, err
+	}
+	return ks.Ks, nil
+}
+
+func (t *Tailor) Keys(expr string, maxSize int) ([]string, error) {
+	err := t.sendDatagram(keys, expr, "", "")
+	if err != nil {
+		return nil, err
+	}
+	err = t.readRespMsg()
+	if err != nil {
+		return nil, err
+	}
+
+	buf := make([]byte, maxSize)
+	n, err := t.read(buf)
+	if err != nil {
+		return nil, err
+	}
+	return getKeys(buf[:n])
 }
 
 func (t *Tailor) sendDatagram(op byte, key, val, exp string) error {
