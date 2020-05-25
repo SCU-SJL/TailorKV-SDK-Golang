@@ -122,3 +122,14 @@ func TestTailor_Incr(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestTailor_Keys(t *testing.T) {
+	if tErr != nil {
+		t.Fatal(tErr)
+	}
+	ks, err := tailor.Keys("[a-z]+", 1024)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println(ks)
+}
