@@ -185,6 +185,14 @@ func (t *Tailor) Incrby(key string, addition int) error {
 	return t.readRespMsg()
 }
 
+func (t *Tailor) Cls() error {
+	err := t.sendDatagram(cls, "", "", "")
+	if err != nil {
+		return err
+	}
+	return t.readRespMsg()
+}
+
 func (t *Tailor) sendDatagram(op byte, key, val, exp string) error {
 	data := &datagram{
 		Op:  op,
