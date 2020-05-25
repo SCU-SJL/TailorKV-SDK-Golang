@@ -191,7 +191,7 @@ func (t *Tailor) Cls() error {
 }
 
 type keysDatagram struct {
-	Ks []string `json:"ks"`
+	Ks []string `json:"keys"`
 }
 
 func getKeys(data []byte) ([]string, error) {
