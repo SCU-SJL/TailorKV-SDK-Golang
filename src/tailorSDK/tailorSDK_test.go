@@ -133,3 +133,17 @@ func TestTailor_Keys(t *testing.T) {
 	}
 	fmt.Println(ks)
 }
+
+func TestTailor_Save(t *testing.T) {
+	if tErr != nil {
+		t.Fatal(tErr)
+	}
+	err := tailor.Set("me", "sjl")
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = tailor.Save("testSDK.tkv")
+	if err != nil {
+		t.Error(err)
+	}
+}
