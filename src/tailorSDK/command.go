@@ -190,6 +190,22 @@ func (t *Tailor) Cls() error {
 	return t.readRespMsg()
 }
 
+func (t *Tailor) Save(filename string) error {
+	err := t.sendDatagram(save, filename, "", "")
+	if err != nil {
+		return err
+	}
+	err = t.readRespMsg()
+	if err != nil {
+		return errors.New("no expiration part of tailor kv failed to save")
+	}
+	err = t.readRespMsg()
+	if err != nil {
+		return errors.New("expiry part of tailor kv failed to save")
+	}
+	return nil
+}
+
 type keysDatagram struct {
 	Ks []string `json:"keys"`
 }
