@@ -206,6 +206,14 @@ func (t *Tailor) Save(filename string) error {
 	return nil
 }
 
+func (t *Tailor) Load(filename string) error {
+	err := t.sendDatagram(load, filename, "", "")
+	if err != nil {
+		return err
+	}
+	return t.readRespMsg()
+}
+
 type keysDatagram struct {
 	Ks []string `json:"keys"`
 }
