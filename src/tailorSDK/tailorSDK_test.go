@@ -147,3 +147,13 @@ func TestTailor_Save(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestTailor_Load(t *testing.T) {
+	if tErr != nil {
+		t.Fatal(tErr)
+	}
+	err := tailor.Load("testSDK.tkv")
+	if err != nil {
+		t.Error(err)
+	}
+}
